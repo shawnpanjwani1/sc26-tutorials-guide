@@ -10,5 +10,5 @@ summaries, presenters, schedules, what you'll learn, step-by-step checklists, se
 - `llm-evaluation-study-guide.html` — companion study guide for "Rigorous Evaluation of LLM Components in HPC Research".
 
 Summaries, checklists and questions are study notes written by an SC'26 attendee, not the presenters' material.
-Tutorial slides belong to their presenters and are distributed to registered SC'26 attendees, so they are not included here.
+Slides: `slides/` holds password-protected (AES-256) .7z packs of the tutorial slides for our team only; ask Shawn for the password. Slides belong to their presenters.
 Official tutorial pages: https://sc26.conference-program.com/
