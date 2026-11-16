@@ -1,8 +1,8 @@
 # SC'26 Tutorials — learning guide
 
-A guided, searchable overview of all 31 tutorials from SC'26 (Supercomputing 2026, Chicago, Nov 15–16, 2026):
+A searchable overview of all 31 tutorials from SC'26 (Supercomputing 2026, Chicago, Nov 15–16, 2026):
 summaries, presenters, schedules, what you'll learn, step-by-step checklists, self-check questions and public links
-(repositories, demo sites, documentation), plus 5 short basics modules.
+(repositories, demo sites, documentation).
 
 **Open the guide:** https://shawnpanjwani1.github.io/sc26-tutorials-guide/
 
