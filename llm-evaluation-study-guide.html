@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Guide: Rigorous Evaluation of LLM Components in HPC Research</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--mute:#5d6678;--line:#e3e6ee;--acc:#3b5bdb;--acc2:#e8edff;--ok:#2b8a3e;--okbg:#e6f4ea;--bad:#c92a2a;--badbg:#fdecec;--warnbg:#fff4e0}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b1f2a;--ink:#e6e9f0;--mute:#9aa3b5;--line:#2c3242;--acc:#7c95ff;--acc2:#252d48;--ok:#5cc97a;--okbg:#1d3326;--bad:#ff8080;--badbg:#3a1f22;--warnbg:#3a2e17}}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top{display:flex;align-items:center;gap:14px;padding:10px 0}
+.top b{flex:1;font-size:16px}
+.bar{height:8px;width:200px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+nav{display:flex;gap:4px;flex-wrap:wrap;padding-bottom:8px;font-size:14px}
+nav a{padding:4px 10px;border-radius:7px;text-decoration:none;color:var(--mute)}nav a:hover{background:var(--acc2);color:var(--acc)}
+h1{font-size:26px;margin:24px 0 4px}h2{font-size:20px;margin:0 0 8px}h3{font-size:16px;margin:14px 0 4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+.mute{color:var(--mute)}.small{font-size:14px}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;background:var(--acc2);color:var(--acc);margin-right:4px}
+.big{font-size:18px}
+.tldr{border-left:4px solid var(--acc)}
+.lie{display:grid;grid-template-columns:34px 1fr 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.lie:last-child{border:0}.lie .n{font-weight:700;font-size:20px;color:var(--bad)}
+.bad{background:var(--badbg);border-radius:8px;padding:6px 10px;font-size:14px}.good{background:var(--okbg);border-radius:8px;padding:6px 10px;font-size:14px}
+code,pre{font:13.5px ui-monospace,Consolas,monospace}pre{background:var(--acc2);padding:10px 12px;border-radius:8px;overflow:auto}
+.done-row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--mute)}
+.done-row input{width:18px;height:18px}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+details{background:var(--acc2);border-radius:8px;padding:8px 12px;margin:6px 0}summary{cursor:pointer;font-weight:600}
+.callout{background:var(--warnbg);border-radius:8px;padding:10px 14px;margin:10px 0}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}.flow span{background:var(--acc2);color:var(--acc);padding:4px 10px;border-radius:14px;font-size:14px}
+input[type=number]{width:80px;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+a{color:var(--acc)}
+textarea{width:100%;min-height:90px;font:inherit;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.grid2,.lie{grid-template-columns:1fr}.bar{display:none}table{display:block;overflow-x:auto}ul[style*="columns"]{columns:1!important}}pre{white-space:pre-wrap;word-break:break-word}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+ <div class="top"><b>LLM Evaluation: study guide</b><span class="small mute" id="pt"></span><div class="bar"><i id="pb"></i></div></div>
+ <nav><a href="#start">Start</a><a href="#s2">1 LLM basics</a><a href="#s3">2 The 9 lies</a><a href="#s4">3 Experiment design</a><a href="#s5">4 Reproducibility</a><a href="#s6">5 Human validation</a><a href="#s7">6 Metrics</a><a href="#demos">Demos</a><a href="#check">Checklist</a><a href="#quiz">Quiz</a><a href="#notes">Notes</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 id="start">Rigorous Evaluation of LLM Components in HPC Research</h1>
+<div class="mute">SC'26 tutorial · Presented Mon Nov 16, 2026 · Daniel Nichols (LLNL), Abhinav Bhatele (U. Maryland), Harshitha Menon (LLNL)</div>
+<div class="row small" style="margin-top:6px">
+ <a href="https://parallelcodefoundry.github.io/tutorials/sc-2026-llm-eval/" target="_blank">Tutorial site</a> ·
+ <a href="https://parallelcodefoundry.github.io/assets/presentations/rigorous-llm-tutorial-sc-2026.pdf" target="_blank">Slides (PDF)</a>
+</div>
+<div class="small mute" style="margin-top:4px">Study notes written from the public slides and demos; not an official tutorial document.</div>
+
+<div class="card tldr"><h2>The whole tutorial in 5 sentences</h2>
+<ol class="big">
+ <li><b>LLMs are random.</b> The same question can get different answers, so <b>one run proves nothing</b>.</li>
+ <li>Run <b>many samples</b> and report a <b>probability</b> (pass@k, speedup@k), not your best example.</li>
+ <li><b>Log every input and output</b> so others can <i>replay</i> your results instead of re-generating them.</li>
+ <li>Report <b>everything</b>: model + version, sampling settings, prompts, human steps, cost/tokens, limitations.</li>
+ <li>Don't trust a single judge (an LLM <i>or</i> a human). Prefer <b>objective, reproducible checks</b> (tests, runtimes, multiple-choice).</li>
+</ol>
+<div class="callout small"><b>Why it matters:</b> in normal HPC research a compiler is deterministic. Put an LLM in that loop (e.g. "LLM optimizes the GPU kernel → run & profile → repeat") and part of your method is now <b>stochastic</b>. You must evaluate it like any other noisy experiment.</div>
+<div class="flow"><span>GPU kernel</span>→<span>LLM optimization (random!)</span>→<span>optimized kernel</span>→<span>run &amp; profile</span>→<span>repeat</span></div>
+</div>
+
+<div class="card"><h2>How to use this today</h2>
+<div class="small">Each section matches part of the talk, in order. Read the <b>plain-English</b> part, glance at <b>remember this</b>, tick <b>done</b>. Do the browser demos when the presenters do (no install needed). End with the quiz. Progress and notes save in your browser.</div>
+<table class="small" style="margin-top:8px"><tr><th>Talk section</th><th>Slides</th><th>Here</th></tr>
+<tr><td>Introduction</td><td>1–5</td><td>Start (above)</td></tr>
+<tr><td>Intro to LLMs + Demo 1</td><td>6–15</td><td>1</td></tr>
+<tr><td>How to lie with LLM results</td><td>16–25</td><td>2</td></tr>
+<tr><td>Experimental design + Demo 2/3</td><td>26–37</td><td>3</td></tr>
+<tr><td>Transparency &amp; reproducibility + replay demo</td><td>38–54</td><td>4</td></tr>
+<tr><td>Human validation</td><td>55–59</td><td>5</td></tr>
+<tr><td>Baselines, metrics &amp; ablations + metrics demo</td><td>60–68</td><td>6</td></tr>
+<tr><td>Discussion / questions</td><td>69–70</td><td>Quiz, Notes</td></tr></table>
+</div>
+
+<div class="card" id="s2"><span class="pill">Section 1 · slides 6–15</span><h2>How an LLM works (just enough)</h2>
+<div class="grid2">
+<div>
+<h3>Plain English</h3>
+<ul>
+ <li>An <b>LLM</b> is a neural network (a <i>transformer</i>) that reads text and outputs <b>probabilities for the next token</b>.<br><span class="small mute">"I have a pet" → dog 0.4 · cat 0.3 · … · cow 0.01 · chair 0.00001</span></li>
+ <li><b>Tokens</b> are integer IDs for pieces of text. They are not exactly words or characters.</li>
+ <li><b>Generation</b> = pick a next token, add it, repeat until a stop token. Small early differences snowball into very different answers.</li>
+ <li><b>Sampling</b>: always picking the top token gives dull, repetitive text, so models pick <i>randomly</i>:
+  <ul class="small"><li><b>Temperature</b>: low = safe/predictable, high = creative/random.</li>
+  <li><b>Top-k</b>: choose only among the k most likely tokens.</li>
+  <li><b>Top-p (nucleus)</b>: choose among the smallest set of tokens whose probabilities add up to p.</li>
+  <li><b>Greedy</b>: always the top token (temperature ≈ 0).</li></ul></li>
+</ul></div>
+<div>
+<h3>Where randomness comes from</h3>
+<ol>
+ <li><b>Sampling</b>: random choice of the next token.</li>
+ <li><b>Prompt variance</b>: "Find the square root of N" vs "What times itself equals N?" are the same <i>problem</i>, different <i>prompts</i>.</li>
+ <li>Hidden sources: GPU parallelism and floating-point order, mixture-of-experts routing, and commercial models silently changing weights or system prompts.</li>
+</ol>
+<div class="callout small"><b>Remember this:</b> with fixed weights and input, the model's probabilities are essentially deterministic (apart from small floating-point and batching effects). Most of the randomness comes from <b>how you sample</b> and <b>how you ask</b>.</div>
+</div></div>
+<div class="done-row"><input type="checkbox" data-k="s2"> done</div></div>
+
+<div class="card" id="s3"><span class="pill">Section 2 · slides 16–25</span><h2>"How to lie with LLM results": the 9 traps</h2>
+<div class="small mute" style="margin-bottom:6px">The heart of the tutorial. Each row: the mistake, and what to do instead.</div>
+<div class="lie"><div class="n">1</div><div class="bad"><b>Ignoring randomness:</b> reporting one output.</div><div class="good">Generate many samples, and vary the prompt too. Report a probability (mean accuracy, pass@k).</div></div>
+<div class="lie"><div class="n">2</div><div class="bad"><b>Mixing formatting with skill:</b> <code>int(answer)==truth</code> fails on "The answer is 42".</div><div class="good">Parse answers generously, unless formatting is part of the task.</div></div>
+<div class="lie"><div class="n">3</div><div class="bad"><b>Cherry-picking</b> the best example or the only setting that works.</div><div class="good">Report all results and all sampling parameters.</div></div>
+<div class="lie"><div class="n">4</div><div class="bad"><b>Benchmark leakage:</b> the test questions were in the training data, so you measure memory, not skill.</div><div class="good">Use private questions, and check they're not near-copies of public ones.</div></div>
+<div class="lie"><div class="n">5</div><div class="bad"><b>Too-simple metrics:</b> MPI code that sends to every rank in a loop "works".</div><div class="good">Also judge quality: the right answer is <code>MPI_Bcast</code>. Measure performance and idiom, not just "runs".</div></div>
+<div class="lie"><div class="n">6</div><div class="bad"><b>LLM-as-judge:</b> small prompt or judge changes swing scores (<i>rubric drift</i>), and judges reward style over correctness.</div><div class="good">Use as a helper only, never as the sole scientific evaluation.</div></div>
+<div class="lie"><div class="n">7</div><div class="bad"><b>Human-as-judge:</b> hidden criteria, inconsistent people.</div><div class="good">Publish the criteria and raw scores. Follow social-science practice for labeling.</div></div>
+<div class="lie"><div class="n">8</div><div class="bad"><b>Hidden human help:</b> cleaning data between steps, tweaking prompts, swapping models.</div><div class="good">Document every human intervention.</div></div>
+<div class="lie"><div class="n">9</div><div class="bad"><b>No cost reported.</b> Better but 10× pricier?</div><div class="good">Report $ or GPU-hours <b>and token counts</b> (prices change, tokens don't).</div></div>
+<div class="done-row"><input type="checkbox" data-k="s3"> done</div></div>
+
+<div class="card" id="s4"><span class="pill">Section 3 · slides 26–37</span><h2>Designing experiments with a random part</h2>
+<h3>7 ways LLMs show up in research (know which one you're doing)</h3>
+<table class="small"><tr><th>Role</th><th>What the LLM does</th><th>HPC example</th></tr>
+<tr><td><b>Annotation</b></td><td>Labels artifacts</td><td>Tag job logs as "memory-bound / MPI issue / IO bottleneck"</td></tr>
+<tr><td><b>Judge</b></td><td>Scores against a rubric</td><td>"Is this optimization plausible?"</td></tr>
+<tr><td><b>Synthesis</b></td><td>Combines evidence, makes data</td><td>Summarize profiler reports; make synthetic test kernels</td></tr>
+<tr><td><b>Generation</b></td><td>Writes code/configs</td><td>Kernels, MPI/OpenMP/CUDA, job scripts, compiler flags</td></tr>
+<tr><td><b>Tools / agents</b></td><td>Embedded in a tool</td><td>Porting, performance debugging, workflow automation</td></tr>
+<tr><td><b>Benchmarking</b></td><td>Is the thing being tested</td><td>Many attempts on standard HPC tasks</td></tr>
+<tr><td><b>Subject</b></td><td>Plays a user</td><td>Simulated scientist or operator in a workflow study</td></tr></table>
+<h3>Four techniques</h3>
+<ol>
+ <li><b>Structured outputs</b>: force JSON with fixed fields, and retry if invalid. Less randomness, easier parsing (fixes Lie 2).</li>
+ <li><b>Test each component alone</b>: log the inputs and outputs of each agent step, and turn them into a small benchmark for that step.</li>
+ <li><b>Ablations</b>: remove one piece and see if results change. <i>Demo 3:</i> is "self-repair" really better than just spending the same attempts on fresh programs?</li>
+ <li><b>Sanity-check by eye</b>, even when humans aren't part of the method. Example: what if the "explain the profile" LLM starts writing optimizations itself?</li>
+</ol>
+<div class="done-row"><input type="checkbox" data-k="s4"> done</div></div>
+
+<div class="card" id="s5"><span class="pill">Section 4 · slides 38–54</span><h2>Transparency &amp; reproducibility</h2>
+<div class="grid2"><div>
+<h3>Key idea: replay, don't regenerate</h3>
+<p>Big open models and commercial APIs can't be made bit-reproducible. So <b>the generated outputs themselves are part of your artifact</b>. Another researcher should be able to <b>replay</b> your logged outputs and get your numbers.</p>
+<h3>How to log</h3>
+<ul class="small">
+ <li><b>APIs</b>: wrap calls in a logger. Tens of lines: intercept HTTP, hash the request, save the response, and in replay mode return the saved one.</li>
+ <li><b>Agent frameworks</b> have tracing: OpenAI Agents SDK (on by default), LangChain <code>LANGSMITH_TRACING=true</code>, LlamaIndex <code>mlflow.llama_index.autolog()</code>, AutoGen (Python logging).</li>
+ <li><b>Anonymous review</b>: <a href="https://anonymous.4open.science/" target="_blank">anonymous.4open.science</a> hosts files with names masked.</li>
+ <li>Never save API keys in logs.</li>
+</ul></div><div>
+<h3>What to report (7 items)</h3>
+<table class="small">
+<tr><td><b>Declaration</b></td><td>All LLM use, where and why. Prominent if central.</td></tr>
+<tr><td><b>Models/versions</b></td><td>Model, version, quantization, software versions, sampling settings (defaults change!)</td></tr>
+<tr><td><b>Design</b></td><td>Prompts, workflow, data flow between components</td></tr>
+<tr><td><b>Traces</b></td><td>Actual outputs, with samples in the paper</td></tr>
+<tr><td><b>Benchmarks &amp; metrics</b></td><td>Why chosen; number of repetitions and all configs</td></tr>
+<tr><td><b>Reference</b></td><td>A human or open-model baseline next to commercial results</td></tr>
+<tr><td><b>Limitations</b></td><td>LLM-specific risks</td></tr></table>
+<div class="small mute">Main paper = what's crucial to the method. Supplement/artifact = full prompts and traces. Checklist inspired by Baltes et al., "LLM Guidelines".</div>
+</div></div>
+<div class="done-row"><input type="checkbox" data-k="s5"> done</div></div>
+
+<div class="card" id="s6"><span class="pill">Section 5 · slides 55–59</span><h2>Human validation: when and how</h2>
+<p><b>Problem:</b> people are inconsistent (even with themselves over time), hard to reproduce, and easily swayed. Longer, more technical answers "feel" better even when wrong.</p>
+<details><summary>Try it: which answer is better? (slide 59)</summary>
+<p class="small">"Can this loop be safely parallelized with OpenMP?" <code>for(i=1;i&lt;n;i++) a[i] = a[i-1] + b[i];</code></p>
+<p class="small"><b>A:</b> "Yes, each iteration writes a distinct a[i]… here's the <code>#pragma omp parallel for</code> version, faster for large n." Confident, has code.<br>
+<b>B:</b> "No, a[i] reads a[i-1] from the previous iteration: a loop-carried dependence. A naive parallel for can change the result."</p>
+<p class="small"><b>B is correct.</b> A looks more helpful but is wrong. That's exactly why "which looks better?" is a bad human metric.</p></details>
+<h3>Do it right</h3>
+<ul>
+ <li>Use humans as a <b>supplement</b> to reproducible metrics, never alone.</li>
+ <li>Publish all human scores and raw data. They are part of the method.</li>
+ <li>Ask humans to <b>do something measurable</b> with the output, not to vote on it:<br>
+ <span class="small">✗ "Rate this performance explanation: good / ok / bad"<br>✓ "Use this explanation to optimize the code", then measure the speedup. Or "answer these multiple-choice questions using the summary".</span></li>
+</ul>
+<div class="done-row"><input type="checkbox" data-k="s6"> done</div></div>
+
+<div class="card" id="s7"><span class="pill">Section 6 · slides 60–68</span><h2>Baselines and metrics</h2>
+<h3>Baselines</h3>
+<p>Compare with models of similar <b>cost, speed, quality and availability</b>, <i>and</i> with the frontier (state of the art). "Best open model" is a valid result, but still show the frontier for context.</p>
+<h3>Probabilistic metrics: the formulas, simply</h3>
+<p>Generate <b>N</b> samples per prompt (N much larger than k), count <b>c</b> correct, then ask: <i>if the model gets k tries, how likely is at least one to be correct?</i></p>
+<pre>pass@k = 1 − C(N−c, k) / C(N, k)      (C = "n choose k")</pre>
+<p class="small">Same idea, other uses: <b>race@k</b> = chance at least one of k attempts has a race condition. <b>speedup@k</b> = expected <i>best</i> speedup over k attempts (sequential baseline time ÷ generated code time). <b>reg@k</b> = expected <i>minimum</i> register use over k attempts. From Nichols et al., "Can Large Language Models Write Parallel Code?"</p>
+<div class="card" style="background:var(--acc2);border:0"><b>Try it: pass@k calculator</b>
+<div class="small" style="margin:6px 0">N samples <input type="number" id="N" value="10" min="1"> correct c <input type="number" id="c" value="3" min="0"> k <input type="number" id="k" value="3" min="1"> → <b id="pk"></b></div>
+<div class="small mute">Example: 3 of 10 samples correct. pass@1 = 30%, but pass@3 ≈ 71%. That's why you must say which k you report.</div></div>
+<div class="callout small"><b>Watch for the trap in the dot-product example:</b> <code>#pragma omp parallel for</code> with <code>sum +=</code> and no <code>reduction(+:sum)</code> is a <b>data race</b>, so it's wrong even though it compiles and often "works". Correctness checks must catch this.</div>
+<div class="done-row"><input type="checkbox" data-k="s7"> done</div></div>
+
+<div class="card" id="demos"><h2>Hands-on demos</h2><div class="small mute">Demos 1–3 and 5 run in your browser with nothing to install. Demo 4 needs Python + git.</div>
+<table class="small">
+<tr><th>Demo</th><th>What you do</th><th>What to notice</th></tr>
+<tr><td><a href="https://parallelcodefoundry.github.io/tutorials/sc-2026-llm-eval/demos/sampling.html" target="_blank">1 · Randomness</a></td><td>Change temperature / top-k / top-p / greedy; sample tokens. Optional: TinyLlama in the browser.</td><td>Greedy repeats itself; high temperature goes off the rails.</td></tr>
+<tr><td><a href="https://parallelcodefoundry.github.io/tutorials/sc-2026-llm-eval/demos/sampling-workbench.html" target="_blank">2 · More attempts</a> (~20 min)</td><td>Llama-3 8B on GSM8K math: 1–8 samples per question, stop rules (random, majority vote, N agree, ideal verifier), cost.</td><td>More samples help a lot with a verifier, less with majority vote. Cost grows linearly.</td></tr>
+<tr><td><a href="https://parallelcodefoundry.github.io/tutorials/sc-2026-llm-eval/demos/ablation-workbench.html" target="_blank">3 · Ablation</a> (~20 min)</td><td>Code models on HumanEval with self-repair; then "Run without repair" on the same budget.</td><td>Is repair really the reason for the gain, or just extra attempts? Answer "supported / not supported" honestly.</td></tr>
+<tr><td><a href="https://parallelcodefoundry.github.io/tutorials/sc-2026-llm-eval/demos/http-replay-agent.html" target="_blank">4 · Replay</a> (optional)</td><td>Record an agent's API calls, then replay them.</td><td>Second run is identical and free.</td></tr>
+<tr><td><a href="https://parallelcodefoundry.github.io/tutorials/sc-2026-llm-eval/demos/probabilistic-metrics.html" target="_blank">5 · Metrics</a> (optional)</td><td>Three "optimizer" scenarios; change k.</td><td>Mean speedup vs speedup@k can rank optimizers differently.</td></tr></table>
+<details><summary>Demo 4 commands (Linux / macOS, then Windows)</summary>
+<pre>git clone https://github.com/parallelcodefoundry/llm-eval-isc-2026.git
+cd llm-eval-isc-2026
+python -m venv .venv
+source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -r demos/http_replay_agent/requirements.txt
+# terminal 1 (downloads a small local model, serves on port 8008):
+python demos/http_replay_agent/start_local_server.py
+# terminal 2 (same venv):
+python demos/http_replay_agent/agent.py           # record
+python demos/http_replay_agent/agent.py --replay  # replay from the log</pre></details>
+<div class="done-row"><input type="checkbox" data-k="demos"> done</div></div>
+
+<div class="card" id="check"><h2>One-page checklist (use it on your next LLM project)</h2>
+<ul style="columns:2;font-size:14px">
+<li>☐ Many samples per problem, not one</li><li>☐ Vary the prompt wording too</li>
+<li>☐ Report pass@k / mean, and state k and N</li><li>☐ All sampling settings reported</li>
+<li>☐ Parse answers generously / structured JSON</li><li>☐ Test set not in training data</li>
+<li>☐ Metrics cover quality and performance, not just "runs"</li><li>☐ No LLM-only or human-only judging</li>
+<li>☐ Every human intervention written down</li><li>☐ Every request and response logged, replayable</li>
+<li>☐ Model, version, quantization, software versions</li><li>☐ Prompts and workflow described</li>
+<li>☐ Cost, GPU-hours <b>and</b> tokens</li><li>☐ Ablation for each claimed component</li>
+<li>☐ Open-model or human baseline next to frontier models</li><li>☐ Limitations section</li></ul>
+<div class="callout small"><b>Apply it:</b> pick one place your team uses an LLM today (code generation, summarizing logs, labeling, an agent). Which boxes above does it tick? The cheapest wins are usually: log every request/response, sample more than once, and add an "LLM-off" baseline.</div>
+<div class="done-row"><input type="checkbox" data-k="check"> done</div></div>
+
+<div class="card" id="quiz"><h2>Self-check quiz</h2><div class="small mute">Answer in your head, then click to reveal.</div>
+<details><summary>1. Why is reporting one LLM output misleading?</summary>Outputs are random (sampling and prompt wording). Report a probability over many samples.</details>
+<details><summary>2. Your script marks "The answer is 42" wrong because it expects "42". Which lie?</summary>Lie 2, mixing formatting with skill. Parse generously or use structured output.</details>
+<details><summary>3. 2 of 20 samples are correct. Estimate pass@1. Is pass@5 higher or lower?</summary>pass@1 = 10%. pass@5 is higher (≈ 45%), because more tries means more chances.</details>
+<details><summary>4. Why can't you just rerun a GPT experiment to reproduce it?</summary>Sampling randomness, non-deterministic GPU math, and the provider can change the model. Log outputs and replay them.</details>
+<details><summary>5. What is rubric drift?</summary>Small changes in the judge's prompt or model swing the scores. It's why LLM-as-a-judge can't be the only evaluation.</details>
+<details><summary>6. Why report token counts and not just dollars?</summary>Prices change over time; token counts stay comparable.</details>
+<details><summary>7. Name a better human evaluation than "rate this explanation good/ok/bad".</summary>Have the person use the explanation for a task (optimize the code, answer multiple-choice) and measure the result.</details>
+<details><summary>8. What does an ablation tell you in the self-repair demo?</summary>Whether the gain comes from "repair" itself or just from spending more attempts. Compare against fresh samples on the same budget.</details>
+<details><summary>9. What is wrong with <code>#pragma omp parallel for</code> + <code>sum += x[i]*y[i]</code>?</summary>A data race on <code>sum</code>. It needs <code>reduction(+:sum)</code>. Compiling and "seeming to work" isn't correct.</details>
+<details><summary>10. Which 7 things go in an LLM reporting checklist?</summary>Declaration, models/versions, design, traces, benchmarks &amp; metrics, reference (human/open-model), limitations.</details>
+<div class="done-row"><input type="checkbox" data-k="quiz"> done</div></div>
+
+<div class="card" id="notes"><h2>My notes &amp; questions</h2>
+<div class="small mute">Ideas for questions to ask: "How do you pick N when generations are expensive?" · "Is a fixed seed with temperature 0 enough for reproducibility on commercial APIs?" · "How do you check contamination for a closed model?"</div>
+<textarea id="nt" placeholder="Write while you listen..."></textarea></div>
+
+<p class="small mute" style="margin:30px 0">Built from the tutorial's 70-slide deck and the demo pages on the tutorial site.</p>
+</main>
+<script>
+const K="sc26-llm-eval-guide";let S={};try{S=JSON.parse(localStorage.getItem(K)||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const boxes=[...document.querySelectorAll("[data-k]")];
+function prog(){const d=boxes.filter(b=>b.checked).length;document.getElementById("pb").style.width=(100*d/boxes.length)+"%";document.getElementById("pt").textContent=d+"/"+boxes.length+" sections"}
+boxes.forEach(b=>{b.checked=!!(S.done||{})[b.dataset.k];b.onchange=()=>{S.done=S.done||{};S.done[b.dataset.k]=b.checked;save();prog()}});prog();
+const nt=document.getElementById("nt");nt.value=S.notes||"";nt.oninput=()=>{S.notes=nt.value;save()};
+function C(n,k){if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r}
+function pk(){const N=+document.getElementById("N").value,c=+document.getElementById("c").value,k=+document.getElementById("k").value;
+ let v=(k>N||c>N)?NaN:1-C(N-c,k)/C(N,k);document.getElementById("pk").textContent=isNaN(v)?"needs k ≤ N and c ≤ N":"pass@"+k+" = "+(100*v).toFixed(1)+"%"}
+["N","c","k"].forEach(i=>document.getElementById(i).oninput=pk);pk();
+</script>
+</body>
+</html>
